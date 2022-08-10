@@ -9,12 +9,12 @@ class random_warp_Graph:
 
 	def addPath(self, node1, node2, directions): # You should add a path based on your source, target and the path you took and the place you reached
 		if node1 not in self.graph:		# Example: You can say add path: Floraroma_town oldale_town Left_building_3-->5th_building_right
-		    self.graph[node1] = []		# That means if you are in oldale town then you can get to floraroma town 5th right building from the 3rd left 
+		    self.graph[node1] = []		# That means if you are in oldale town then you can get to floraroma town 5th right building from the 3rd left
 		if node2 not in self.graph:		# building in oldale town and viceversa. If it is a one way please specify so.
 		    self.graph[node2] = []
 
 		self.graph[node2].append((node1,directions))
-		self.graph[node1].append((node2,"Follow in REVERSE!:: "+directions))
+		self.graph[node1].append((node2,"Follow in REVERSE!: "+directions))
 
 	def printGraph(self):
 		for source, destination in self.graph.items():
@@ -28,7 +28,7 @@ def build_graph():
 	print("Enter '2' if you feel you have traversed enough or if you want to Find a path")
 	while(mode==0):
 #		pdb.set_trace()
-		user_input = input()	
+		user_input = input()
 		if(user_input=='2'):
 			mode = 1
 		else:
@@ -38,33 +38,51 @@ def build_graph():
 	g.printGraph()
 	return g
 
-def PathFinder(target,source,g):
-	#Convention is PathFinder(destination, source, Map so far)
+def flatten(l):
+    return [item for sublist in l for item in sublist]
+
+def PathFinder(source,target,g):
+	#Convention is PathFinder(source, destination, Map object so far)
 	map1 = g.graph
 	#pdb.set_trace()
 	path_success = 0
-	path = [target]
 	if target in map1:
 		print("This is a valid destination, finding path...")
-		nested_neigh = map1[source]
 		#pdb.set_trace()
-		path_taken = []
+		source = [source]
+		old_source = []
 		while(path_success==0):
-			for neigh_loc in nested_neigh:
-				if(target in [i[0] for i in nested_neigh]):
-					print(source + " --> " + neigh_loc[1] + " --> " + neigh_loc[0])
-					path_success = 1
-					break
-			else:					
-				#print("level count")
-				nested_neigh = map1[neigh_loc[0]]
-				source = neigh_loc[0]
-				#tracer = ([i[0] for i in nested_neigh].index(target))
-				path+=[nested_neigh]
-	
-		print(path)
+			neighbours = [map1[x] for x in source]
+			neighbours = flatten(neighbours)			# Cleaning up the format of the neighbours, I hate doing stuff like this. Learn to use queues..nooooo
+
+			for neigh_loc in neighbours:
+				#pdb.set_trace()
+				if(neigh_loc[0] not in old_source):		# Won't visit a neighbour if he's already been visited once before
+							#print(neigh_loc)
+							if(target in neigh_loc):
+								path_success = 1
+								break
+
+			else:
+				print("level count")
+				#pdb.set_trace()
+				n_old = neighbours
+				old_source = source
+				source = [x[0] for x in n_old]
+				#path_taken+=[neighbours]
+
 	else:
 		print("Invalid destination, check spellings etc.")
 		return 0
 	
-
+'''
+Use case:
+S T1 L1
+S T2 L2
+T1 T3 L13
+T1 T4 L14
+T2 T5 L25
+T2 T6 L26
+T6 T7 L67
+2
+'''
