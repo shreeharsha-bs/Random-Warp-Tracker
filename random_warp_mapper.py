@@ -1,6 +1,6 @@
 # Using graph data structures to act as a random warp zone tracker in Pokemon warp games
 # With this tracker, keep track of Gyms, elite 4 memebers, warp zones and also get a printed path to anywhere you want to go
-# I want to write this so that adding new nodes/vertices (which act as names to locations). There's no inherent edge cost that I want to deal with. I also won't use adjaceny matrices since the matrix will be largely sparse and adding new rows and columns is generally a pain point with matrices in python.
+# I want to write this so that adding new nodes/vertices (which act as names to locations) is easy. There's no inherent edge cost that I want to deal with. I also won't use adjaceny matrices since the matrix will be largely sparse and adding new rows and columns is generally a pain point with matrices in python.
 import pdb
 
 class random_warp_Graph:
