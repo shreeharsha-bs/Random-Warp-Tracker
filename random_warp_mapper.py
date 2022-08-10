@@ -2,7 +2,6 @@
 # With this tracker, keep track of Gyms, elite 4 memebers, warp zones and also get a printed path to anywhere you want to go
 # I want to write this so that adding new nodes/vertices (which act as names to locations) is easy. There's no inherent edge cost that I want to deal with. I also won't use adjaceny matrices since the matrix will be largely sparse and adding new rows and columns is generally a pain point with matrices in python.
 import pdb
-import numpy as np
 
 class random_warp_Graph:
 	def __init__(self):
@@ -70,7 +69,6 @@ def PathFinder(source,target,g):
 
 									parent = flatten(map1[neigh_loc])
 									#pdb.set_trace()
-									#parent_pr = parent[np.where(neigh_loc==parent)[0]:np.where(neigh_loc==parent)[0]+1]
 
 									print(parent)
 									#if(len(parent)!=1):
