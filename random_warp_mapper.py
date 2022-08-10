@@ -2,6 +2,7 @@
 # With this tracker, keep track of Gyms, elite 4 memebers, warp zones and also get a printed path to anywhere you want to go
 # I want to write this so that adding new nodes/vertices (which act as names to locations) is easy. There's no inherent edge cost that I want to deal with. I also won't use adjaceny matrices since the matrix will be largely sparse and adding new rows and columns is generally a pain point with matrices in python.
 import pdb
+import numpy as np
 
 class random_warp_Graph:
 	def __init__(self):
@@ -24,7 +25,7 @@ class random_warp_Graph:
 def build_graph():
 	g = random_warp_Graph()
 	mode = 0
-	print("Please enter directions like: Target Source PATH_YOU_TOOK_AND_WHERE_IT_LED")
+	print("Please enter directions like: Source Target PATH_YOU_TOOK_AND_WHERE_IT_LED")
 	print("Enter '2' if you feel you have traversed enough or if you want to Find a path")
 	while(mode==0):
 #		pdb.set_trace()
@@ -47,30 +48,44 @@ def PathFinder(source,target,g):
 	#pdb.set_trace()
 	path_success = 0
 	if target in map1:
-		print("This is a valid destination, finding path...")
+		print(target + " is a valid destination, finding path...")
 		#pdb.set_trace()
+		source_init=source
 		source = [source]
 		old_source = []
+		print(source_init)
 		while(path_success==0):
 			neighbours = [map1[x] for x in source]
 			neighbours = flatten(neighbours)			# Cleaning up the format of the neighbours, I hate doing stuff like this. Learn to use queues..nooooo
-
 			for neigh_loc in neighbours:
 				#pdb.set_trace()
 				if(neigh_loc[0] not in old_source):		# Won't visit a neighbour if he's already been visited once before
-							#print(neigh_loc)
 							if(target in neigh_loc):
 								path_success = 1
+								parent = target
+								while(source_init not in parent):
+									pdb.set_trace()
+									if(len(neigh_loc)!=1):
+										neigh_loc=neigh_loc[0]
+
+									parent = flatten(map1[neigh_loc])
+									#pdb.set_trace()
+									#parent_pr = parent[np.where(neigh_loc==parent)[0]:np.where(neigh_loc==parent)[0]+1]
+
+									print(parent)
+									#if(len(parent)!=1):
+									#	parent=parent[0]
+
+									neigh_loc = parent
 								break
 
 			else:
-				print("level count")
 				#pdb.set_trace()
 				n_old = neighbours
-				old_source = source
+				old_source+= source
 				source = [x[0] for x in n_old]
 				#path_taken+=[neighbours]
-
+		print(target)
 	else:
 		print("Invalid destination, check spellings etc.")
 		return 0
