@@ -1,7 +1,9 @@
 # Using graph data structures to act as a random warp zone tracker in Pokemon warp games
 # With this tracker, keep track of Gyms, elite 4 memebers, warp zones and also get a printed path to anywhere you want to go
 # I want to write this so that adding new nodes/vertices (which act as names to locations) is easy. There's no inherent edge cost that I want to deal with. I also won't use adjaceny matrices since the matrix will be largely sparse and adding new rows and columns is generally a pain point with matrices in python.
-import pdb
+
+#import pdb
+from itertools import chain
 
 class random_warp_Graph:
 	def __init__(self):
@@ -38,56 +40,87 @@ def build_graph():
 	g.printGraph()
 	return g
 
+def common_elements(list1, list2):
+    return [element for element in list1 if element in list2]
+
 def flatten(l):
     return [item for sublist in l for item in sublist]
 
 def PathFinder(source,target,g):
 	#Convention is PathFinder(source, destination, Map object so far)
 	map1 = g.graph
-	#pdb.set_trace()
 	path_success = 0
 	if target in map1:
 		print(target + " is a valid destination, finding path...")
-		#pdb.set_trace()
 		source_init=source
 		source = [source]
 		old_source = []
-		print(source_init)
+		nb = []
+		#prev = ['Dummy variable with long name, so it\'s never confused']
+		#print(source_init)
 		while(path_success==0):
-			neighbours = [map1[x] for x in source]
-			neighbours = flatten(neighbours)			# Cleaning up the format of the neighbours, I hate doing stuff like this. Learn to use queues..nooooo
-			for neigh_loc in neighbours:
-				#pdb.set_trace()
-				if(neigh_loc[0] not in old_source):		# Won't visit a neighbour if he's already been visited once before
-							if(target in neigh_loc):
+			for y in source:
+				neighbours = flatten(map1[y])[::2] # Cleaning up the format of the neighbours, I hate doing stuff like this. Learn to use queues..nooooo
+
+				for neigh_loc in neighbours:
+					#print(neigh_loc)
+					if([neigh_loc] in old_source or neigh_loc in old_source):
+						continue # Won't visit neighbours if he's already been visited once before
+					else:
+						if(target in neigh_loc):
 								path_success = 1
+								prev = y
 								parent = target
-								while(source_init not in parent):
-									pdb.set_trace()
-									if(len(neigh_loc)!=1):
-										neigh_loc=neigh_loc[0]
-
-									parent = flatten(map1[neigh_loc])
-									#pdb.set_trace()
-
-									print(parent)
-									#if(len(parent)!=1):
-									#	parent=parent[0]
-
-									neigh_loc = parent
+									# No back traces again because there might be one ways, we'll have to rely on old_source
 								break
 
 			else:
 				#pdb.set_trace()
 				n_old = neighbours
-				old_source+= source
-				source = [x[0] for x in n_old]
-				#path_taken+=[neighbours]
-		print(target)
+				neighbours = flatten([map1[temp] for temp in source])
+				#pdb.set_trace()
+				neighbours = list(chain.from_iterable(neighbours))[::2]
+				neighbours = list(set(neighbours))
+				#nb += [neighbours]
+
+				if(source_init in source and len(source)!=1):
+					source.remove(source_init)
+
+				old_source.append(source)
+
+				if(path_success == 1):
+						old_source_bt = old_source[::-1]
+						old_source_bt[0]= [prev]
+						for index in range(0,len(old_source_bt)):
+							if(len(old_source_bt[index])==1):
+								continue
+							#pdb.set_trace()
+							#print(index)
+							old_source_bt[index] = common_elements(list(chain.from_iterable(map1[old_source_bt[index-1][0]]))[::2],old_source_bt[index])
+							if(len(old_source_bt[index])!=1):
+								old_source_bt[index] = [old_source_bt[index][0]]
+
+
+				source = neighbours
+		#print(target)
+		old_source_bt.insert(0,[target])
+		output = old_source_bt[::-1]
+		return output
+
+#In [39]: PathFinder('T7','S',map1)
+#S is a valid destination, finding path...
+#Out[39]: [[['T7'], ['T6'], ['T2', 'T5']], 'S']
+
 	else:
 		print("Invalid destination, check spellings etc.")
 		return 0
-	
+
+
+if __name__ == "__main__":
+	map1 = build_graph()
+	output = PathFinder('S','T6',map1)
+	print(output)
+
 '''
 Use case:
 S T1 L1
@@ -96,6 +129,8 @@ T1 T3 L13
 T1 T4 L14
 T2 T5 L25
 T2 T6 L26
+T5 T6 L56
+T5 T7 L57
 T6 T7 L67
 2
 '''
