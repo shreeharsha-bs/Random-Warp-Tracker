@@ -37,7 +37,7 @@ def build_graph():
 			node1, node2, directions = user_input.split(' ')
 			g.addPath(node1, node2, directions)
 		
-	g.printGraph()
+	#g.printGraph()
 	return g
 
 def common_elements(list1, list2):
@@ -104,7 +104,7 @@ def PathFinder(source,target,g):
 				source = neighbours
 		#print(target)
 		old_source_bt.insert(0,[target])
-		output = old_source_bt[::-1]
+		output = flatten(old_source_bt[::-1])
 		return output
 
 #In [39]: PathFinder('T7','S',map1)
@@ -115,11 +115,22 @@ def PathFinder(source,target,g):
 		print("Invalid destination, check spellings etc.")
 		return 0
 
-
+def path_printer(s,d,g):
+	map1 = g.graph
+	output = PathFinder(s,d,g)
+	#print(output[0])
+	for i in range(0,len(output)-1):
+		#path_printer(output[i],output[i+1],map1)
+		for loc in map1[output[i]]:
+			if(output[i+1] in loc):
+				print(output[i] + " --> " + loc[1]+" --> " + loc[0])
+				break
+		else:
+			return 0
 if __name__ == "__main__":
 	map1 = build_graph()
-	output = PathFinder('S','T6',map1)
-	print(output)
+	source = 'T1'; destination = 'T7' # Example route
+	path_printer(source,destination,map1)
 
 '''
 Use case:
