@@ -71,7 +71,7 @@ def PathFinder(source,target,g):
 								path_success = 1
 								prev = y
 								parent = target
-									# No back traces again because there might be one ways, we'll have to rely on old_source
+									# Back traces will be done later on. Target found and exiting loop
 								break
 
 			else:
@@ -88,7 +88,7 @@ def PathFinder(source,target,g):
 
 				old_source.append(source)
 
-				if(path_success == 1):
+				if(path_success == 1): # back tracing done here and choosing a neighbour (by backtracing) using common_elements function in line 99, rest of the lines are just data formatting
 						old_source_bt = old_source[::-1]
 						old_source_bt[0]= [prev]
 						for index in range(0,len(old_source_bt)):
